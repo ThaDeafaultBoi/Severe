@@ -17,7 +17,7 @@ local RunService = game:GetService("RunService")
 
 ---- constants ----
 local VOID_OFFSET = 5000   -- far enough to leave any map, close enough renderer doesn't break
-local KEYBIND     = "V"    -- uppercase, matched via table.find
+local KEYBIND     = "f1"   -- F1
 local KEY_DELAY   = 0.2
 
 ---- variables ----
@@ -76,7 +76,16 @@ task.spawn(function()
         local now = os.clock()
         if now - last_toggle > KEY_DELAY then
             local keys = getpressedkeys()
-            if table.find(keys, KEYBIND) then
+            -- F-keys come back as numbers, letter keys as strings
+            -- check both raw and tostring match
+            local pressed = false
+            for i = 1, #keys do
+                if tostring(keys[i]):lower() == KEYBIND then
+                    pressed = true
+                    break
+                end
+            end
+            if pressed then
                 last_toggle = now
                 doToggle()
                 task.wait(KEY_DELAY)
@@ -125,7 +134,7 @@ RunService.Render:Connect(function(dt)
     sRect(BTN_X, BTN_Y, BTN_W, BTN_H, C.border, 1, 0.8)
     fRect(BTN_X, BTN_Y, 2, BTN_H, Enabled and C.red or C.blue)
     lbl(BTN_X + BTN_W / 2, BTN_Y + BTN_H / 2 - 6, 12, C.white,
-        Enabled and "VOID  [V / click]" or "VOID HIDE  [V / click]", true)
+        Enabled and "VOID  [F1 / click]" or "VOID HIDE  [F1 / click]", true)
 end)
 
 ---- main physics loop (original logic, unchanged) ----
@@ -150,4 +159,4 @@ RunService.PostLocal:Connect(function()
     end
 end)
 
-send_notification("[VoidHide] Ready — V or click button", "success")
+send_notification("[VoidHide] Ready — F1 or click button", "success")
